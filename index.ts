@@ -1,7 +1,6 @@
 import { Neurosity } from "@neurosity/sdk";
 import { Session, SupabaseClient, createClient } from "@supabase/supabase-js";
 import express from "express";
-
 const BUFFER_SIZE = 100;
 const BUFFER_FLUSH_INTERVAL = 10 * 1000; // 10 seconds
 
@@ -114,18 +113,38 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
         }
     });
 
+    const u3 = neurosity.calm().subscribe(async (calm) => {
+        isReceivingFocus = true;
+
+        // console.log("calm", calm);
+        const nf = {
+            probability: calm.probability,
+            metadata: {
+                label: calm.label,
+            },
+            user_id: mediarUserId,
+        }
+        try {
+            await bufferData(nf, 'states');
+        } catch (error) {
+            console.log("Error buffering calm data:", error);
+            u3.unsubscribe();
+        }
+    });
+
     await new Promise((resolve, reject) => {
         setTimeout(async () => {
             if (!isReceivingFocus) {
                 u1.unsubscribe();
                 u2.unsubscribe();
+                u3.unsubscribe();
                 reject(new Error("No data received from brainwaves in the specified timeout"));
             }
             console.log("🧠 Got some data from brainwaves");
         }, timeoutMs);
     });
 
-    return { unsubscribe1: u1.unsubscribe, unsubscribe2: u2.unsubscribe };
+    return { unsubscribe1: u1.unsubscribe, unsubscribe2: u2.unsubscribe, unsubscribe3: u3.unsubscribe };
 }
 
 const getAllTokensAndListen = async () => {
