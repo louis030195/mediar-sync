@@ -117,24 +117,24 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
         }
     });
 
-    const u3 = neurosity.calm().subscribe(async (calm) => {
-        isReceivingFocus = true;
+    // const u3 = neurosity.calm().subscribe(async (calm) => {
+    //     isReceivingFocus = true;
 
-        // console.log("calm", calm);
-        const nf = {
-            probability: calm.probability,
-            metadata: {
-                label: calm.label,
-            },
-            user_id: mediarUserId,
-        }
-        try {
-            await bufferData(nf, 'states');
-        } catch (error) {
-            console.log("Error buffering calm data:", error);
-            u3.unsubscribe();
-        }
-    });
+    //     // console.log("calm", calm);
+    //     const nf = {
+    //         probability: calm.probability,
+    //         metadata: {
+    //             label: calm.label,
+    //         },
+    //         user_id: mediarUserId,
+    //     }
+    //     try {
+    //         await bufferData(nf, 'states');
+    //     } catch (error) {
+    //         console.log("Error buffering calm data:", error);
+    //         u3.unsubscribe();
+    //     }
+    // });
 
     u1.add(() => {
         delete listenedIds[mediarUserId];
@@ -144,9 +144,9 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
         delete listenedIds[mediarUserId];
     });
     
-    u3.add(() => {
-        delete listenedIds[mediarUserId];
-    });
+    // u3.add(() => {
+    //     delete listenedIds[mediarUserId];
+    // });
     
 
     await new Promise((resolve, reject) => {
@@ -154,14 +154,13 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
             if (!isReceivingFocus) {
                 u1.unsubscribe();
                 u2.unsubscribe();
-                u3.unsubscribe();
+                // u3.unsubscribe();
                 reject(new Error("No data received from brainwaves in the specified timeout"));
             }
             console.log("🧠 Got some data from brainwaves");
         }, timeoutMs);
     });
 
-    return { unsubscribe1: u1.unsubscribe, unsubscribe2: u2.unsubscribe, unsubscribe3: u3.unsubscribe };
 }
 
 const getAllTokensAndListen = async () => {
