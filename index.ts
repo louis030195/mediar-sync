@@ -54,6 +54,8 @@ server.headersTimeout = 120 * 1000;
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!);
 
+const listenedIds = {}
+
 const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     const neurosity = new Neurosity();
     await neurosity.logout();
@@ -75,6 +77,8 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     const mediarUserId = data[0].mediar_user_id;
 
     console.log("Listening to brain for mediar_user_id:", mediarUserId);
+
+    listenedIds[mediarUserId] = () => isReceivingFocus = false
 
     const u1 = neurosity.brainwaves("powerByBand").subscribe(async (powerByBand) => {
         isReceivingFocus = true;
@@ -132,6 +136,19 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
         }
     });
 
+    u1.add(() => {
+        delete listenedIds[mediarUserId];
+    });
+    
+    u2.add(() => {
+        delete listenedIds[mediarUserId];
+    });
+    
+    u3.add(() => {
+        delete listenedIds[mediarUserId];
+    });
+    
+
     await new Promise((resolve, reject) => {
         setTimeout(async () => {
             if (!isReceivingFocus) {
@@ -171,5 +188,36 @@ const getAllTokensAndListen = async () => {
     }
 }
 
+const listenForNewTokens = () => {
+    supabase
+        .channel('postgresChangesChannel')
+        .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'tokens'
+        },
+            (payload) => {
+                console.log('Change received!', payload);
+                if (payload.eventType === 'UPDATE') {
+                    console.log("update event on", payload);
+                }
+                // Get the new token from the payload and start listening to the brain
+                const newToken = payload.new['token'];
+                // listenToBrain(newToken)
+                //     .catch(async error => {
+                //         console.log("Error listening to brain for token:", newToken, error);
+
+                //         const { error: updateError } = await supabase
+                //             .from('tokens')
+                //             .update({ status: { valid: false } })
+                //             .eq('token', newToken);
+                //         if (updateError) {
+                //             console.log("Error setting token status to off:", newToken, updateError);
+                //         }
+                //     });
+            })
+        .subscribe();
+}
 
 getAllTokensAndListen();
+listenForNewTokens();
