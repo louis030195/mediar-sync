@@ -199,6 +199,12 @@ const listenForNewTokens = () => {
                 console.log('Change received!', payload);
                 if (payload.eventType === 'UPDATE') {
                     console.log("update event on", payload);
+
+                    // if the change is .status.valid return
+
+                    if (payload?.old?.status?.valid !== undefined && payload?.old?.status?.valid === false) {
+                        return
+                    }
                 }
                 // Get the new token from the payload and start listening to the brain
                 const newToken = payload.new['token'];
