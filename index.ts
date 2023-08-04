@@ -203,18 +203,18 @@ const listenForNewTokens = () => {
                 }
                 // Get the new token from the payload and start listening to the brain
                 const newToken = payload.new['token'];
-                // listenToBrain(newToken)
-                //     .catch(async error => {
-                //         console.log("Error listening to brain for token:", newToken, error);
+                listenToBrain(newToken)
+                    .catch(async error => {
+                        console.log("Error listening to brain for token:", newToken, error);
 
-                //         const { error: updateError } = await supabase
-                //             .from('tokens')
-                //             .update({ status: { valid: false } })
-                //             .eq('token', newToken);
-                //         if (updateError) {
-                //             console.log("Error setting token status to off:", newToken, updateError);
-                //         }
-                //     });
+                        const { error: updateError } = await supabase
+                            .from('tokens')
+                            .update({ status: { valid: false } })
+                            .eq('token', newToken);
+                        if (updateError) {
+                            console.log("Error setting token status to off:", newToken, updateError);
+                        }
+                    });
             })
         .subscribe();
 }
