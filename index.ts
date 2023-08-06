@@ -164,7 +164,7 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
 }
 
 const getAllTokensAndListen = async () => {
-    const { data: tokens, error } = await supabase.from('tokens').select('token');
+    const { data: tokens, error } = await supabase.from('tokens').select('token,provider');
 
     if (error) {
         console.log("error", error);
@@ -172,6 +172,8 @@ const getAllTokensAndListen = async () => {
     }
 
     for (const token of tokens) {
+        if (token['provider'] !== "neurosity") return
+
         listenToBrain(token.token)
             .catch(async error => {
                 console.log("Error listening to brain for token:", token, error);
@@ -197,6 +199,8 @@ const listenForNewTokens = () => {
         },
             (payload) => {
                 console.log('Change received!', payload);
+                if (payload.new['provider'] !== "neurosity") return
+
                 if (payload.eventType === 'UPDATE') {
                     console.log("update event on", payload);
 
