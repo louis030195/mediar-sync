@@ -67,6 +67,7 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     const { data, error } = await supabase
         .from('tokens')
         .select('mediar_user_id')
+        .eq('provider', 'neurosity')
         .eq('token', token);
 
     if (error) {
@@ -86,7 +87,8 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
         // console.log("powerByBand", powerByBand);
         const nf = {
             metadata: {
-                ...powerByBand
+                ...powerByBand,
+                provider: 'neurosity',
             },
             user_id: mediarUserId,
         }
@@ -106,6 +108,7 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
             probability: focus.probability,
             metadata: {
                 label: focus.label,
+                provider: 'neurosity',
             },
             user_id: mediarUserId,
         }
@@ -139,15 +142,15 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     u1.add(() => {
         delete listenedIds[mediarUserId];
     });
-    
+
     u2.add(() => {
         delete listenedIds[mediarUserId];
     });
-    
+
     // u3.add(() => {
     //     delete listenedIds[mediarUserId];
     // });
-    
+
 
     await new Promise((resolve, reject) => {
         setTimeout(async () => {
@@ -164,7 +167,8 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
 }
 
 const getAllTokensAndListen = async () => {
-    const { data: tokens, error } = await supabase.from('tokens').select('token,provider');
+    const { data: tokens, error } = await supabase.from('tokens').select('token,provider')
+        .eq('provider', 'neurosity');
 
     if (error) {
         console.log("error", error);
@@ -181,6 +185,7 @@ const getAllTokensAndListen = async () => {
                 const { error: updateError } = await supabase
                     .from('tokens')
                     .update({ status: { valid: false } })
+                    .eq('provider', 'neurosity')
                     .eq('token', token.token);
                 if (updateError) {
                     console.log("Error setting token status to off:", token, updateError);
@@ -219,6 +224,7 @@ const listenForNewTokens = () => {
                         const { error: updateError } = await supabase
                             .from('tokens')
                             .update({ status: { valid: false } })
+                            .eq('provider', 'neurosity')
                             .eq('token', newToken);
                         if (updateError) {
                             console.log("Error setting token status to off:", newToken, updateError);
