@@ -152,17 +152,17 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     // });
 
 
-    await new Promise((resolve, reject) => {
-        setTimeout(async () => {
-            if (!isReceivingFocus) {
-                u1.unsubscribe();
-                u2.unsubscribe();
-                // u3.unsubscribe();
-                reject(new Error("No data received from brainwaves in the specified timeout"));
-            }
-            console.log("🧠 Got some data from brainwaves");
-        }, timeoutMs);
-    });
+    // await new Promise((resolve, reject) => {
+    //     setTimeout(async () => {
+    //         if (!isReceivingFocus) {
+    //             u1.unsubscribe();
+    //             u2.unsubscribe();
+    //             // u3.unsubscribe();
+    //             reject(new Error("No data received from brainwaves in the specified timeout"));
+    //         }
+    //         console.log("🧠 Got some data from brainwaves");
+    //     }, timeoutMs);
+    // });
 
 }
 
