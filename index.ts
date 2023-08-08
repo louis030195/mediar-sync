@@ -58,7 +58,7 @@ const listenedIds = {}
 
 const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     const neurosity = new Neurosity();
-    // await neurosity.logout();
+    await neurosity.logout();
     await neurosity.login({ customToken: token });
 
     let isReceivingFocus = false;
