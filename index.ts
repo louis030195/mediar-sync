@@ -56,26 +56,12 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KE
 
 const listenedIds = {}
 
-const listenToBrain = async (token: string, timeoutMs = 10_000) => {
+const listenToBrain = async (token: string, mediarUserId: string, userId: string) => {
     const neurosity = new Neurosity();
     await neurosity.logout();
     await neurosity.login({ customToken: token });
 
     let isReceivingFocus = false;
-
-    // Retrieve user_id from the tokens table
-    const { data, error } = await supabase
-        .from('tokens')
-        .select('mediar_user_id')
-        .eq('provider', 'neurosity')
-        .eq('token', token);
-
-    if (error) {
-        console.error('Error retrieving mediar_user_id:', error);
-        return;
-    }
-
-    const mediarUserId = data[0].mediar_user_id;
 
     console.log("Listening to brain for mediar_user_id:", mediarUserId);
     // unlisten to previous one
@@ -155,7 +141,14 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     //     delete listenedIds[mediarUserId];
     // });
 
-
+    const i = setInterval(async () => {
+        if (!isReceivingFocus) {
+            u1.unsubscribe();
+            u2.unsubscribe();
+            // u3.unsubscribe();
+            clearInterval(i);
+        }
+    }, 1000);
     // await new Promise((resolve, reject) => {
     //     setTimeout(async () => {
     //         if (!isReceivingFocus) {
@@ -171,7 +164,7 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
 }
 
 const getAllTokensAndListen = async () => {
-    const { data: tokens, error } = await supabase.from('tokens').select('token,provider')
+    const { data: tokens, error } = await supabase.from('tokens').select('token,provider,mediar_user_id,user_id')
         .eq('provider', 'neurosity');
 
     if (error) {
@@ -182,7 +175,7 @@ const getAllTokensAndListen = async () => {
     for (const token of tokens) {
         if (token['provider'] !== "neurosity") return
 
-        listenToBrain(token.token)
+        listenToBrain(token.token, token.mediar_user_id, token.user_id)
             .catch(async error => {
                 console.log("Error listening to brain for token:", token, error);
 
@@ -221,7 +214,7 @@ const listenForNewTokens = () => {
                 }
                 // Get the new token from the payload and start listening to the brain
                 const newToken = payload.new['token'];
-                listenToBrain(newToken)
+                listenToBrain(newToken, payload.new['mediar_user_id'], payload.new['user_id'])
                     .catch(async error => {
                         console.log("Error listening to brain for token:", newToken, error);
 
