@@ -182,14 +182,14 @@ const getAllTokensAndListen = async () => {
             .catch(async error => {
                 console.log("Error listening to brain for token:", token, error);
 
-                const { error: updateError } = await supabase
-                    .from('tokens')
-                    .update({ status: { valid: false } })
-                    .eq('provider', 'neurosity')
-                    .eq('token', token.token);
-                if (updateError) {
-                    console.log("Error setting token status to off:", token, updateError);
-                }
+                // const { error: updateError } = await supabase
+                //     .from('tokens')
+                //     .update({ status: { valid: false } })
+                //     .eq('provider', 'neurosity')
+                //     .eq('token', token.token);
+                // if (updateError) {
+                //     console.log("Error setting token status to off:", token, updateError);
+                // }
             });
     }
 }
@@ -211,9 +211,9 @@ const listenForNewTokens = () => {
 
                     // if the change is .status.valid return
 
-                    if (payload?.old?.status?.valid !== undefined && payload?.old?.status?.valid === false) {
-                        return
-                    }
+                    // if (payload?.old?.status?.valid !== undefined && payload?.old?.status?.valid === false) {
+                    //     return
+                    // }
                 }
                 // Get the new token from the payload and start listening to the brain
                 const newToken = payload.new['token'];
@@ -221,14 +221,14 @@ const listenForNewTokens = () => {
                     .catch(async error => {
                         console.log("Error listening to brain for token:", newToken, error);
 
-                        const { error: updateError } = await supabase
-                            .from('tokens')
-                            .update({ status: { valid: false } })
-                            .eq('provider', 'neurosity')
-                            .eq('token', newToken);
-                        if (updateError) {
-                            console.log("Error setting token status to off:", newToken, updateError);
-                        }
+                        // const { error: updateError } = await supabase
+                        //     .from('tokens')
+                        //     .update({ status: { valid: false } })
+                        //     .eq('provider', 'neurosity')
+                        //     .eq('token', newToken);
+                        // if (updateError) {
+                        //     console.log("Error setting token status to off:", newToken, updateError);
+                        // }
                     });
             })
         .subscribe();
