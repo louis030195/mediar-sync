@@ -78,7 +78,11 @@ const listenToBrain = async (token: string, timeoutMs = 10_000) => {
     const mediarUserId = data[0].mediar_user_id;
 
     console.log("Listening to brain for mediar_user_id:", mediarUserId);
-
+    // unlisten to previous one
+    if (listenedIds[mediarUserId]) {
+        console.log("Unlistening to previous brain for mediar_user_id:", mediarUserId);
+        listenedIds[mediarUserId]();
+    }
     listenedIds[mediarUserId] = () => isReceivingFocus = false
 
     const u1 = neurosity.brainwaves("powerByBand").subscribe(async (powerByBand) => {
