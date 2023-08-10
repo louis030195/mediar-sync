@@ -59,7 +59,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
     const neurosity = new Neurosity({
         // autoSelectDevice: true,
     });
-    // await neurosity.logout();
+    await neurosity.logout();
 
     // @ts-ignore
     const token: string = await neurosity.getOAuthToken({
@@ -77,7 +77,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
 
     await neurosity.login({ customToken: token });
 
-    let isReceivingFocus = false;
+    let isReceivingFocus = true;
 
     console.log("Listening to brain for user_id:", userId);
     if (listenedIds[userId]) {
@@ -103,7 +103,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
     })
 
     const u2 = neurosity.focus().subscribe(async (focus) => {
-        // console.log("Focus received:", focus);
+        //console.log("Focus received:", focus);
 
         const nf = {
             probability: focus.probability,
@@ -131,6 +131,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
 
     const i = setInterval(async () => {
         if (!isReceivingFocus) {
+            console.log("Logging out user_id:", userId);
             u1.unsubscribe();
             u2.unsubscribe();
             clearInterval(i);
