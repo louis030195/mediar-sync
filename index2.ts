@@ -75,7 +75,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
 
     console.log("Obtained token for userId:", userId);
 
-    await neurosity.login({ customToken: token });
+    await neurosity.login({ customToken: token }).catch(error => console.log("Error logging in:", error));
 
     let isReceivingFocus = true;
 
