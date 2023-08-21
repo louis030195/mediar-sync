@@ -58,10 +58,8 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KE
 const listenedIds = {};
 
 const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
-    const neurosity = new Neurosity({
-        // autoSelectDevice: true,
-    });
-    await neurosity.logout();
+    const neurosity = new Neurosity();
+    // await neurosity.logout();
 
     // @ts-ignore
     const token: string = await neurosity.getOAuthToken({
@@ -77,8 +75,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
 
     console.log("Obtained token for userId:", userId);
 
-    await neurosity.login({ customToken: token }).catch(error => console.log("Error logging in:", error));
-
+    await neurosity.login({ customToken: token })
     let isReceivingFocus = true;
 
     console.log("Listening to brain for user_id:", userId);
