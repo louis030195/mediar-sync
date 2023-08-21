@@ -28,18 +28,20 @@ const flushBuffer = async () => {
         return acc;
     }, {});
 
+    let userId = ''
     for (const table in groupedBuffer) {
         try {
             const { error } = await supabase.from(table).upsert(groupedBuffer[table]);
             if (error) {
                 console.error("Error while upserting data:", error);
             }
+            userId = groupedBuffer[table][0].user_id
         } catch (error) {
             console.error("Unhandled error while upserting data:", error);
         }
     }
 
-    console.log("Flushed buffer of size", buffer.length);
+    console.log("Flushed buffer of size", buffer.length, "at", new Date(), "for user_id:", userId);
     buffer = [];
 };
 
