@@ -69,21 +69,21 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
     });
 
     if (!token) {
-        console.error("Failed to obtain token for userId:", userId);
+        console.error("Failed to obtain token for userId:", mediarUserId);
         return;
     }
 
-    console.log("Obtained token for userId:", userId);
+    console.log("Obtained token for userId:", mediarUserId);
 
     await neurosity.login({ customToken: token })
     let isReceivingFocus = true;
 
-    console.log("Listening to brain for user_id:", userId);
-    if (listenedIds[userId]) {
-        console.log("Unlistening to previous brain for user_id:", userId);
-        listenedIds[userId]();
+    console.log("Listening to brain for user_id:", mediarUserId);
+    if (listenedIds[mediarUserId]) {
+        console.log("Unlistening to previous brain for user_id:", mediarUserId);
+        listenedIds[mediarUserId]();
     }
-    listenedIds[userId] = () => isReceivingFocus = false;
+    listenedIds[mediarUserId] = () => isReceivingFocus = false;
 
     const u1 = neurosity.brainwaves("powerByBand").subscribe(async (powerByBand) => {
         const nf = {
