@@ -59,7 +59,7 @@ const listenedIds = {};
 
 const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
     const neurosity = new Neurosity({ autoSelectDevice: false});
-    // await neurosity.logout();
+    await neurosity.logout();
 
     // @ts-ignore
     const token: string = await neurosity.getOAuthToken({
