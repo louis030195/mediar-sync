@@ -104,7 +104,7 @@ const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
     })
 
     const u2 = neurosity.focus().subscribe(async (focus) => {
-        //console.log("Focus received:", focus);
+        console.log("Focus received:", focus);
 
         const nf = {
             probability: focus.probability,
@@ -157,7 +157,7 @@ const getAllUsersAndListen = async () => {
     }
 };
 
-const listenForNewUsers = () => {
+const listenForNewTokens = () => {
     supabase
         .channel('postgresChangesChannel')
         .on('postgres_changes', {
@@ -167,7 +167,7 @@ const listenForNewUsers = () => {
         },
             (payload) => {
                 console.log('Change received!', payload);
-                if (payload.eventType === 'INSERT') {
+                if (payload.eventType === 'INSERT' && payload.new['provider'] !== "neurosity") {
                     const newUser = payload.new['user_id'];
                     const mediarUserId = payload.new['mediar_user_id'];
                     listenToBrainForUser(newUser, mediarUserId)
@@ -180,4 +180,4 @@ const listenForNewUsers = () => {
 };
 
 getAllUsersAndListen();
-listenForNewUsers();
+listenForNewTokens();
