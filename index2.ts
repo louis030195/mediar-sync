@@ -58,7 +58,9 @@ const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KE
 const listenedIds = {};
 
 const listenToBrainForUser = async (userId: string, mediarUserId: string) => {
-    const neurosity = new Neurosity({ autoSelectDevice: false});
+    const neurosity = new Neurosity(
+        
+    );
     await neurosity.logout();
 
     // @ts-ignore
