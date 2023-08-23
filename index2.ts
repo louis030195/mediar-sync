@@ -161,7 +161,7 @@ const listenForNewUsers = () => {
         .on('postgres_changes', {
             event: '*',
             schema: 'public',
-            table: 'users'
+            table: 'tokens'
         },
             (payload) => {
                 console.log('Change received!', payload);
